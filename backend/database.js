@@ -2,7 +2,13 @@ const initSqlJs = require('sql.js');
 const fs = require('fs');
 const path = require('path');
 
-const DB_PATH = path.join(__dirname, 'barbercut.db.json');
+const DB_DIR = path.join(__dirname, 'db');
+const DB_PATH = path.join(DB_DIR, 'barbercut.db.json');
+
+// Crea la carpeta db/ si no existe (ej. primer arranque o repo recién clonado)
+if (!fs.existsSync(DB_DIR)) {
+  fs.mkdirSync(DB_DIR, { recursive: true });
+}
 
 let db = null;
 let SQL = null;
