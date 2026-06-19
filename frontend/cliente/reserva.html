@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BarberCut — Reservar hora</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.steps-bar { display: flex; align-items: center; gap: 0; padding: 16px 24px; background: var(--bg2); border-bottom: 0.5px solid var(--border); }
+.step-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted2); }
+.step-item.active { color: var(--gold); }
+.step-item.done { color: var(--muted); }
+.step-num { width: 22px; height: 22px; border-radius: 50%; border: 0.5px solid currentColor; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+.step-item.done .step-num { background: var(--muted2); border-color: var(--muted2); color: var(--bg); }
+.step-item.active .step-num { background: var(--gold); border-color: var(--gold); color: var(--bg); }
+.step-div { flex: 1; height: 0.5px; background: var(--border); margin: 0 10px; }
+.step-panel { display: none; padding: 24px; max-width: 640px; margin: 0 auto; }
+.step-panel.active { display: block; }
+.step-title { font-size: 17px; font-weight: 500; margin-bottom: 6px; }
+.step-sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+.barbers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap: 12px; }
+.barber-card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 20px 12px; text-align: center; cursor: pointer; transition: all .15s; }
+.barber-card:hover { border-color: var(--border-gold); }
+.barber-card.sel { border: 1.5px solid var(--gold); background: var(--gold-dim); }
+.barber-av { width: 56px; height: 56px; border-radius: 50%; background: var(--bg3); border: 0.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 600; color: var(--gold); margin: 0 auto 10px; }
+.barber-name { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+.barber-stars { font-size: 11px; color: var(--gold); }
+.service-list { display: flex; flex-direction: column; gap: 10px; }
+.svc-card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all .15s; }
+.svc-card:hover { border-color: var(--border-gold); }
+.svc-card.sel { border-left: 2px solid var(--gold); background: var(--gold-dim); }
+.svc-info { display: flex; align-items: center; gap: 12px; }
+.svc-icon { width: 36px; height: 36px; border-radius: 8px; background: var(--bg3); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.svc-name { font-size: 13px; font-weight: 500; }
+.svc-dur { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.svc-price { font-size: 14px; color: var(--gold); font-weight: 500; }
+.total-line { background: var(--bg3); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 12px 16px; display: flex; justify-content: space-between; margin-top: 12px; }
+.date-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 16px; }
+.day-pill { flex: 0 0 58px; background: var(--bg2); border: 0.5px solid var(--border); border-radius: 10px; padding: 10px 4px; text-align: center; cursor: pointer; transition: all .15s; }
+.day-pill:hover { border-color: var(--border-gold); }
+.day-pill.sel { background: var(--gold); border-color: var(--gold); color: #111; }
+.day-name { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: .06em; }
+.day-num { font-size: 16px; font-weight: 600; margin-top: 2px; }
+.times-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+.time-btn { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 8px; padding: 10px 4px; text-align: center; font-size: 12px; cursor: pointer; transition: all .15s; }
+.time-btn:hover:not(.off) { border-color: var(--border-gold); }
+.time-btn.sel { background: var(--gold); border-color: var(--gold); color: #111; font-weight: 500; }
+.time-btn.off { opacity: .3; cursor: not-allowed; text-decoration: line-through; }
+.sticky-bar { position: sticky; bottom: 0; background: var(--bg2); border-top: 0.5px solid var(--border); padding: 12px 24px; }
+.sticky-inner { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
+.sticky-summary { font-size: 12px; color: var(--muted); }
+.sticky-summary span { color: var(--gold); }
+.sticky-row { display: flex; gap: 10px; }
+.trust-chips { display: flex; gap: 12px; flex-wrap: wrap; }
+.trust-chip { font-size: 11px; color: var(--muted2); display: flex; align-items: center; gap: 5px; }
+.confirm-box { text-align: center; padding: 40px 24px; max-width: 420px; margin: 0 auto; }
+.confirm-check { font-size: 48px; margin-bottom: 16px; }
+.confirm-box h2 { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+.confirm-box p { color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+.confirm-detail { background: var(--bg2); border: 0.5px solid var(--border-gold); border-radius: var(--radius-lg); padding: 20px; text-align: left; margin-bottom: 24px; }
+.confirm-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 0.5px solid var(--border); font-size: 13px; }
+.confirm-row:last-child { border-bottom: none; }
+.confirm-row span:first-child { color: var(--muted); }
+.loading-msg { text-align: center; padding: 30px; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="../main.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M6 3l6 9-4 6h8M14 3l-2 3"/><circle cx="17" cy="17" r="3"/></svg>
+    BarberCut
+  </a>
+  <div class="nav-links">
+    <a href="../main.html"><button class="btn btn-ghost">Inicio</button></a>
+    <a href="../login.html"><button class="btn btn-outline">Ingresar</button></a>
+  </div>
+</nav>
+
+<div class="steps-bar">
+  <div class="step-item active" id="si1"><div class="step-num">1</div><span>Barbero</span></div>
+  <div class="step-div"></div>
+  <div class="step-item" id="si2"><div class="step-num">2</div><span>Servicio</span></div>
+  <div class="step-div"></div>
+  <div class="step-item" id="si3"><div class="step-num">3</div><span>Horario</span></div>
+</div>
+
+<div class="step-panel active" id="s1">
+  <div class="step-title">Elige tu barbero</div>
+  <div class="step-sub">Selecciona a quién prefieres atenderte</div>
+  <div class="barbers-grid" id="barberGrid"><div class="loading-msg">Cargando barberos...</div></div>
+</div>
+
+<div class="step-panel" id="s2">
+  <div class="step-title">Selecciona el servicio</div>
+  <div class="step-sub">El precio final se muestra sin cargos ocultos</div>
+  <div class="service-list" id="svcList"></div>
+  <div class="total-line">
+    <span class="text-muted">Total a pagar</span>
+    <span class="text-gold" id="totalLine" style="font-weight:500">Selecciona un servicio</span>
+  </div>
+</div>
+
+<div class="step-panel" id="s3">
+  <div class="step-title">Elige tu horario</div>
+  <div class="step-sub">Los horarios tachados ya están ocupados</div>
+  <div class="date-row" id="dateRow"></div>
+  <div class="times-grid" id="timesGrid"></div>
+</div>
+
+<div class="step-panel" id="s4">
+  <div class="confirm-box">
+    <div class="confirm-check">✅</div>
+    <h2>¡Reserva confirmada!</h2>
+    <p>Te esperamos en BarberCut. Te recomendamos llegar 5 minutos antes.</p>
+    <div class="confirm-detail" id="confirmDetail"></div>
+    <a href="../main.html"><button class="btn btn-gold" style="width:100%;padding:12px;font-size:14px">Volver al inicio</button></a>
+  </div>
+</div>
+
+<div class="sticky-bar" id="stickyBar">
+  <div class="sticky-inner">
+    <div class="sticky-summary" id="stickySummary">Selecciona un barbero para comenzar</div>
+    <div class="sticky-row">
+      <button class="btn btn-ghost" id="btnBack" onclick="prevStep()" style="display:none">← Atrás</button>
+      <button class="btn btn-gold" id="btnNext" onclick="nextStep()" style="flex:1;padding:12px;font-size:14px" disabled>Continuar →</button>
+    </div>
+    <div class="trust-chips">
+      <span class="trust-chip">🔒 Sin registro</span>
+      <span class="trust-chip">✓ Precio garantizado</span>
+      <span class="trust-chip">✗ Cancela gratis</span>
+    </div>
+  </div>
+</div>
+
+<script src="../data.js"></script>
+<script>
+let step = 1, selWorker = null, selService = null, selDate = null, selTime = null;
+let workers = [], services = [];
+
+const TODAY = new Date();
+const DAYS_ES = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+const dates = Array.from({length:7}, (_,i) => {
+  const d = new Date(TODAY); d.setDate(TODAY.getDate()+i);
+  const str = d.toISOString().slice(0,10);
+  return { str, name: DAYS_ES[d.getDay()], num: d.getDate() };
+});
+
+async function init() {
+  try {
+    [workers, services] = await Promise.all([BC.getWorkers(), BC.getServices()]);
+    workers = workers.filter(w => w.active);
+    renderBarbers();
+  } catch (e) {
+    document.getElementById('barberGrid').innerHTML = '<div class="loading-msg">No se pudo conectar con el servidor. Intenta más tarde.</div>';
+  }
+}
+
+function renderBarbers() {
+  document.getElementById('barberGrid').innerHTML = workers.map(w => `
+    <div class="barber-card ${selWorker?.id===w.id?'sel':''}" onclick="pickWorker(${w.id})">
+      <div class="barber-av">${w.initials}</div>
+      <div class="barber-name">${w.name.split(' ')[0]}</div>
+      <div class="barber-stars">★★★★★</div>
+    </div>`).join('');
+}
+function renderServices() {
+  const icons = {1:'✂',2:'🪒',3:'⭐',4:'👑',5:'🪒'};
+  document.getElementById('svcList').innerHTML = services.map(s => `
+    <div class="svc-card ${selService?.id===s.id?'sel':''}" onclick="pickService(${s.id})">
+      <div class="svc-info">
+        <div class="svc-icon">${icons[s.id]||'✂'}</div>
+        <div><div class="svc-name">${s.name}</div><div class="svc-dur">${s.duration} min</div></div>
+      </div>
+      <div class="svc-price">${BC.fmt(s.price)}</div>
+    </div>`).join('');
+  document.getElementById('totalLine').textContent = selService ? BC.fmt(selService.price) : 'Selecciona un servicio';
+}
+function renderCalendar() {
+  document.getElementById('dateRow').innerHTML = dates.map(d => `
+    <div class="day-pill ${selDate===d.str?'sel':''}" onclick="pickDate('${d.str}')">
+      <div class="day-name">${d.name}</div>
+      <div class="day-num">${d.num}</div>
+    </div>`).join('');
+  renderTimes();
+}
+async function renderTimes() {
+  if (!selDate) { document.getElementById('timesGrid').innerHTML = ''; return; }
+  document.getElementById('timesGrid').innerHTML = '<div class="loading-msg">Cargando horarios...</div>';
+  try {
+    const { taken } = await BC.getAvailable(selWorker.id, selDate);
+    document.getElementById('timesGrid').innerHTML = BC.ALL_TIMES.map(t => {
+      const off = taken.includes(t);
+      return `<div class="time-btn ${off?'off':selTime===t?'sel':''}" onclick="${off?'':'pickTime(\''+t+'\')'}">${t}</div>`;
+    }).join('');
+  } catch (e) {
+    document.getElementById('timesGrid').innerHTML = '<div class="loading-msg">No se pudieron cargar los horarios.</div>';
+  }
+}
+
+function pickWorker(id) { selWorker = workers.find(w=>w.id===id); updateUI(); renderBarbers(); }
+function pickService(id) { selService = services.find(s=>s.id===id); updateUI(); renderServices(); }
+function pickDate(d) { selDate = d; selTime = null; renderCalendar(); updateUI(); }
+function pickTime(t) { selTime = t; updateUI(); renderTimes(); }
+
+function updateUI() {
+  const wn = selWorker ? selWorker.name.split(' ')[0] : '—';
+  const sn = selService ? selService.name : '—';
+  const dn = selDate ? BC.fmtDate(selDate) : '—';
+  const tn = selTime || '—';
+  document.getElementById('stickySummary').innerHTML =
+    `<span>${wn}</span> · <span>${sn}</span> · <span>${dn}</span>${selTime?' · <span>'+tn+'</span>':''}`;
+
+  const can = (step===1 && selWorker) || (step===2 && selService) || (step===3 && selDate && selTime);
+  document.getElementById('btnNext').disabled = !can;
+  document.getElementById('btnBack').style.display = step > 1 ? 'block' : 'none';
+
+  ['si1','si2','si3'].forEach((id,i) => {
+    const el = document.getElementById(id);
+    el.className = 'step-item' + (i+1 < step ? ' done' : i+1 === step ? ' active' : '');
+    el.querySelector('.step-num').textContent = (i+1 < step) ? '✓' : (i+1);
+  });
+}
+
+function nextStep() {
+  if (step === 3) { confirmBooking(); return; }
+  document.getElementById('s'+step).classList.remove('active');
+  step++;
+  document.getElementById('s'+step).classList.add('active');
+  if (step===2) renderServices();
+  if (step===3) renderCalendar();
+  updateUI();
+}
+function prevStep() {
+  document.getElementById('s'+step).classList.remove('active');
+  step--;
+  document.getElementById('s'+step).classList.add('active');
+  updateUI();
+}
+
+async function confirmBooking() {
+  const btn = document.getElementById('btnNext');
+  btn.disabled = true; btn.textContent = 'Reservando...';
+  try {
+    await BC.createBooking({
+      client_name: 'Cliente Online',
+      service_id: selService.id,
+      worker_id: selWorker.id,
+      date: selDate,
+      time: selTime
+    });
+
+    document.getElementById('confirmDetail').innerHTML = `
+      <div class="confirm-row"><span>Barbero</span><span>${selWorker.name}</span></div>
+      <div class="confirm-row"><span>Servicio</span><span>${selService.name}</span></div>
+      <div class="confirm-row"><span>Duración</span><span>${selService.duration} min</span></div>
+      <div class="confirm-row"><span>Fecha</span><span>${BC.fmtDate(selDate)}</span></div>
+      <div class="confirm-row"><span>Hora</span><span>${selTime}</span></div>
+      <div class="confirm-row"><span>Total</span><span class="text-gold" style="font-weight:500">${BC.fmt(selService.price)}</span></div>`;
+
+    ['s1','s2','s3'].forEach(id => document.getElementById(id).classList.remove('active'));
+    document.getElementById('s4').classList.add('active');
+    document.getElementById('stickyBar').style.display = 'none';
+    ['si1','si2','si3'].forEach(id => { document.getElementById(id).className='step-item done'; document.getElementById(id).querySelector('.step-num').textContent='✓'; });
+  } catch (e) {
+    alert(e.body?.error || 'No se pudo crear la reserva. Es posible que el horario ya esté ocupado.');
+    btn.disabled = false; btn.textContent = 'Continuar →';
+    if (step === 3) renderTimes();
+  }
+}
+
+init();
+updateUI();
+</script>
+</body>
+</html>

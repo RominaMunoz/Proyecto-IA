@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BarberCut — Dashboard Admin</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 12px; margin-bottom: 28px; }
+.kpi { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 18px; }
+.kpi.highlight { border-color: var(--border-gold); background: var(--gold-dim); }
+.kpi-icon { font-size: 20px; margin-bottom: 10px; }
+.kpi-val { font-size: 20px; font-weight: 600; color: var(--gold); margin-bottom: 3px; }
+.kpi-lbl { font-size: 11px; color: var(--muted); line-height: 1.4; }
+.kpi-sub { font-size: 11px; color: var(--muted2); margin-top: 6px; }
+.section-card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 20px 22px; margin-bottom: 16px; }
+.section-card h3 { font-size: 14px; font-weight: 500; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.slot-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(200px,1fr)); gap: 10px; }
+.slot-worker { background: var(--bg3); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 12px; }
+.slot-worker-name { font-size: 12px; font-weight: 500; margin-bottom: 8px; color: var(--muted); }
+.slot-times { display: flex; flex-wrap: wrap; gap: 5px; }
+.slot-time { font-size: 11px; background: var(--bg2); border: 0.5px solid var(--border); border-radius: 5px; padding: 3px 8px; color: var(--muted2); }
+.worker-card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.worker-info { display: flex; align-items: center; gap: 12px; }
+.worker-meta .name { font-size: 13px; font-weight: 500; }
+.worker-meta .email { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.worker-meta .role-tag { font-size: 10px; color: var(--muted2); margin-top: 3px; }
+.worker-actions { display: flex; gap: 8px; }
+.svc-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 0.5px solid var(--border); flex-wrap: wrap; gap: 8px; }
+.svc-row:last-child { border-bottom: none; }
+.svc-row .name { font-size: 13px; font-weight: 500; }
+.svc-row .meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.svc-row .price { font-size: 13px; color: var(--gold); font-weight: 500; }
+.svc-row-actions { display: flex; gap: 8px; align-items: center; }
+.bar-chart { margin-top: 4px; }
+.bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.bar-label { width: 110px; font-size: 11px; color: var(--muted); text-align: right; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-track { flex: 1; height: 6px; background: var(--bg3); border-radius: 3px; }
+.bar-fill { height: 6px; background: var(--gold); border-radius: 3px; transition: width .3s; }
+.bar-val { width: 50px; font-size: 11px; color: var(--muted2); flex-shrink: 0; }
+.csv-drop { border: 1.5px dashed var(--border-gold); border-radius: var(--radius); padding: 20px; text-align: center; cursor: pointer; transition: all .15s; }
+.csv-drop:hover { background: var(--gold-dim); }
+.csv-result { font-size: 12px; margin-top: 10px; line-height: 1.6; }
+.loading-msg { text-align: center; padding: 30px; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="../main.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M6 3l6 9-4 6h8M14 3l-2 3"/><circle cx="17" cy="17" r="3"/></svg>
+    BarberCut
+  </a>
+  <div class="nav-links">
+    <span style="font-size:12px;color:var(--muted);margin-right:8px" id="adminName"></span>
+    <button class="btn btn-ghost" onclick="logout()">Cerrar sesión</button>
+  </div>
+</nav>
+
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-item active" onclick="showSec('dashboard')" id="nav-dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </div>
+    <div class="sidebar-item" onclick="showSec('trabajadores')" id="nav-trabajadores">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Trabajadores
+    </div>
+    <div class="sidebar-item" onclick="showSec('servicios')" id="nav-servicios">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      Servicios
+    </div>
+    <div class="sidebar-item" onclick="showSec('reservas')" id="nav-reservas">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      Todas las reservas
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <div id="sec-dashboard">
+      <div style="margin-bottom:20px">
+        <div class="sec-tag">Resumen</div>
+        <h2 style="font-size:16px;font-weight:500" id="dashTitle">Dashboard</h2>
+      </div>
+      <div class="kpi-grid" id="kpiGrid"><div class="loading-msg">Cargando...</div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px" id="analyticsRow"></div>
+      <div class="section-card" id="slotsCard" style="margin-top:16px"></div>
+    </div>
+
+    <div id="sec-trabajadores" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <div><div class="sec-tag">Gestión</div><h2 style="font-size:16px;font-weight:500">Trabajadores</h2></div>
+        <button class="btn btn-gold" onclick="openAddWorker()">+ Añadir barbero</button>
+      </div>
+      <div id="workersList"><div class="loading-msg">Cargando...</div></div>
+    </div>
+
+    <div id="sec-servicios" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <div><div class="sec-tag">Gestión</div><h2 style="font-size:16px;font-weight:500">Servicios</h2></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-outline" onclick="document.getElementById('csvInput').click()">📄 Importar CSV</button>
+          <button class="btn btn-gold" onclick="openAddSvc()">+ Añadir servicio</button>
+        </div>
+      </div>
+      <input type="file" id="csvInput" accept=".csv" style="display:none" onchange="handleCSV(event)">
+      <div id="csvResult"></div>
+      <div id="svcList"><div class="loading-msg">Cargando...</div></div>
+    </div>
+
+    <div id="sec-reservas" style="display:none">
+      <div style="margin-bottom:20px"><div class="sec-tag">Gestión</div><h2 style="font-size:16px;font-weight:500">Todas las reservas</h2></div>
+      <div class="tbl-wrap"><table id="allBookings"><tbody><tr><td class="loading-msg">Cargando...</td></tr></tbody></table></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODAL TRABAJADOR -->
+<div class="modal-overlay" id="workerModal">
+  <div class="modal">
+    <div class="modal-head"><h3 id="workerModalTitle">Añadir barbero</h3><button class="modal-close" onclick="closeModals()">×</button></div>
+    <div class="form-group"><label>Nombre completo</label><input id="wName" placeholder="Ej: Pedro González"></div>
+    <div class="form-group"><label>Correo</label><input id="wEmail" type="email" placeholder="pedro@barbercut.cl"></div>
+    <div class="form-group"><label>Contraseña <span id="wPassHint" style="color:var(--muted2)"></span></label><input id="wPass" type="password" placeholder="••••••••"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModals()">Cancelar</button>
+      <button class="btn btn-gold" id="btnSaveWorker" onclick="saveWorker()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SERVICIO -->
+<div class="modal-overlay" id="svcModal">
+  <div class="modal">
+    <div class="modal-head"><h3 id="svcModalTitle">Añadir servicio</h3><button class="modal-close" onclick="closeModals()">×</button></div>
+    <div class="form-group"><label>Nombre del servicio</label><input id="sName" placeholder="Ej: Corte y color"></div>
+    <div class="form-group"><label>Duración (minutos)</label><input id="sDur" type="number" placeholder="45" min="15" step="15"></div>
+    <div class="form-group"><label>Precio (CLP)</label><input id="sPrice" type="number" placeholder="15000" min="1000"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModals()">Cancelar</button>
+      <button class="btn btn-gold" id="btnSaveSvc" onclick="saveSvc()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal" style="max-width:320px">
+    <div class="modal-head"><h3>¿Confirmar eliminación?</h3><button class="modal-close" onclick="closeModals()">×</button></div>
+    <p style="font-size:13px;color:var(--muted)" id="confirmMsg">Esta acción no se puede deshacer.</p>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModals()">Cancelar</button>
+      <button class="btn btn-danger" id="confirmBtn">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<script src="../data.js"></script>
+<script>
+let session = BC.requireRole('admin','../login.html');
+let workers = [], services = [], bookings = [];
+let editingWorker = null, editingSvc = null;
+
+if (session) document.getElementById('adminName').textContent = session.name;
+
+function logout() { BC.clearSession(); window.location.href = '../login.html'; }
+
+function showSec(name) {
+  ['dashboard','trabajadores','servicios','reservas'].forEach(s => {
+    document.getElementById('sec-'+s).style.display = s===name?'block':'none';
+    document.getElementById('nav-'+s).classList.toggle('active',s===name);
+  });
+  if(name==='dashboard') renderDashboard();
+  if(name==='trabajadores') renderWorkers();
+  if(name==='servicios') renderSvcs();
+  if(name==='reservas') renderAllBookings();
+}
+
+async function loadAll() {
+  [workers, services, bookings] = await Promise.all([
+    BC.getWorkers(true), BC.getServices(true), BC.getBookings()
+  ]);
+}
+
+/* ── DASHBOARD ── */
+async function renderDashboard() {
+  await loadAll();
+  const todayStr = new Date().toISOString().slice(0,10);
+  const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate()-7);
+  const week = bookings.filter(b => b.date >= weekAgo.toISOString().slice(0,10));
+
+  const totalBookings = week.length;
+  const totalIncome = week.filter(b=>b.status==='completada').reduce((s,b)=>s+b.amount,0);
+
+  const wCitas = {}, wIncome = {};
+  week.forEach(b => {
+    wCitas[b.worker_id] = (wCitas[b.worker_id]||0)+1;
+    if (b.status==='completada') wIncome[b.worker_id] = (wIncome[b.worker_id]||0)+b.amount;
+  });
+  const topCitasId = Object.keys(wCitas).sort((a,b)=>wCitas[b]-wCitas[a])[0];
+  const topIncomeId = Object.keys(wIncome).sort((a,b)=>wIncome[b]-wIncome[a])[0];
+  const wname = id => workers.find(w=>w.id==id)?.name || '—';
+
+  const svcCount = {};
+  week.forEach(b => { svcCount[b.service_id] = (svcCount[b.service_id]||0)+1; });
+  const svcSorted = Object.keys(svcCount).sort((a,b)=>svcCount[b]-svcCount[a]);
+  const sname = id => services.find(s=>s.id==id)?.name || '—';
+
+  document.getElementById('kpiGrid').innerHTML = `
+    <div class="kpi highlight">
+      <div class="kpi-icon">👑</div>
+      <div class="kpi-val">${topCitasId?wname(topCitasId).split(' ')[0]:'—'}</div>
+      <div class="kpi-lbl">Barbero con más citas</div>
+      <div class="kpi-sub">${topCitasId?wCitas[topCitasId]:0} citas esta semana</div>
+    </div>
+    <div class="kpi highlight">
+      <div class="kpi-icon">💰</div>
+      <div class="kpi-val">${topIncomeId?wname(topIncomeId).split(' ')[0]:'—'}</div>
+      <div class="kpi-lbl">Más ingresos generados</div>
+      <div class="kpi-sub">${topIncomeId?BC.fmt(wIncome[topIncomeId]):'—'}</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icon">⭐</div>
+      <div class="kpi-val">${svcSorted[0]?sname(svcSorted[0]).split(' ')[0]:'—'}</div>
+      <div class="kpi-lbl">Servicio más solicitado</div>
+      <div class="kpi-sub">${svcSorted[0]?svcCount[svcSorted[0]]:0} veces</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icon">📉</div>
+      <div class="kpi-val">${svcSorted.length?sname(svcSorted[svcSorted.length-1]).split(' ')[0]:'—'}</div>
+      <div class="kpi-lbl">Servicio menos solicitado</div>
+      <div class="kpi-sub">${svcSorted.length?svcCount[svcSorted[svcSorted.length-1]]:0} veces</div>
+    </div>
+    <div class="kpi"><div class="kpi-icon">📅</div><div class="kpi-val">${totalBookings}</div><div class="kpi-lbl">Citas esta semana</div></div>
+    <div class="kpi"><div class="kpi-icon">💵</div><div class="kpi-val">${BC.fmt(totalIncome)}</div><div class="kpi-lbl">Ingresos esta semana</div></div>`;
+
+  const maxC = Math.max(...Object.values(wCitas),1);
+  const maxI = Math.max(...Object.values(wIncome),1);
+
+  document.getElementById('analyticsRow').innerHTML = `
+    <div class="section-card">
+      <h3>📊 Citas por barbero</h3>
+      <div class="bar-chart">
+        ${workers.map(w=>`
+          <div class="bar-row">
+            <span class="bar-label">${w.name.split(' ')[0]}</span>
+            <div class="bar-track"><div class="bar-fill" style="width:${Math.round((wCitas[w.id]||0)/maxC*100)}%"></div></div>
+            <span class="bar-val">${wCitas[w.id]||0} citas</span>
+          </div>`).join('')}
+      </div>
+    </div>
+    <div class="section-card">
+      <h3>💰 Ingresos por barbero</h3>
+      <div class="bar-chart">
+        ${workers.map(w=>`
+          <div class="bar-row">
+            <span class="bar-label">${w.name.split(' ')[0]}</span>
+            <div class="bar-track"><div class="bar-fill" style="width:${Math.round((wIncome[w.id]||0)/maxI*100)}%"></div></div>
+            <span class="bar-val">${BC.fmt(wIncome[w.id]||0)}</span>
+          </div>`).join('')}
+      </div>
+    </div>`;
+
+  // Horarios libres hoy
+  const todaySlots = {};
+  for (const w of workers) {
+    try {
+      const { available } = await BC.getAvailable(w.id, todayStr);
+      todaySlots[w.name] = available;
+    } catch { todaySlots[w.name] = []; }
+  }
+  document.getElementById('slotsCard').innerHTML = `
+    <h3 style="font-size:14px;font-weight:500;margin-bottom:14px">🕐 Horarios libres hoy (${BC.fmtDate(todayStr)})</h3>
+    <div class="slot-grid">
+      ${Object.entries(todaySlots).map(([name,times])=>`
+        <div class="slot-worker">
+          <div class="slot-worker-name">${name.split(' ')[0]}</div>
+          <div class="slot-times">${times.length?times.map(t=>`<span class="slot-time">${t}</span>`).join(''):'<span class="slot-time">Sin horarios libres</span>'}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+/* ── WORKERS ── */
+async function renderWorkers() {
+  workers = await BC.getWorkers(true);
+  document.getElementById('workersList').innerHTML = workers.map(w=>`
+    <div class="worker-card">
+      <div class="worker-info">
+        <div class="avatar">${w.initials}</div>
+        <div class="worker-meta">
+          <div class="name">${w.name}</div>
+          <div class="email">${w.email}</div>
+          <div class="role-tag">${w.active?'<span class="badge badge-success">Activo</span>':'<span class="badge badge-danger">Inactivo</span>'}</div>
+        </div>
+      </div>
+      <div class="worker-actions">
+        <button class="btn btn-sm btn-ghost" onclick="editWorker(${w.id})">Editar</button>
+        <button class="btn btn-sm btn-danger" onclick="confirmDelete('worker',${w.id},'¿Eliminar a ${w.name}?')">Eliminar</button>
+      </div>
+    </div>`).join('') || '<p style="color:var(--muted);font-size:13px">No hay trabajadores registrados.</p>';
+}
+
+function openAddWorker() {
+  editingWorker = null;
+  document.getElementById('workerModalTitle').textContent = 'Añadir barbero';
+  document.getElementById('wPassHint').textContent = '';
+  ['wName','wEmail','wPass'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('workerModal').classList.add('open');
+}
+function editWorker(id) {
+  const w = workers.find(x=>x.id===id);
+  editingWorker = w;
+  document.getElementById('workerModalTitle').textContent = 'Editar barbero';
+  document.getElementById('wPassHint').textContent = '(déjalo vacío para no cambiarla)';
+  document.getElementById('wName').value = w.name;
+  document.getElementById('wEmail').value = w.email;
+  document.getElementById('wPass').value = '';
+  document.getElementById('workerModal').classList.add('open');
+}
+async function saveWorker() {
+  const name = document.getElementById('wName').value.trim();
+  const email = document.getElementById('wEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('wPass').value;
+  if (!name||!email) return alert('Completa nombre y correo');
+  if (!editingWorker && !pass) return alert('La contraseña es requerida para un nuevo barbero');
+
+  const btn = document.getElementById('btnSaveWorker');
+  btn.disabled = true;
+  try {
+    if (editingWorker) {
+      const fields = { name, email };
+      if (pass) fields.password = pass;
+      await BC.updateWorker(editingWorker.id, fields);
+    } else {
+      await BC.createWorker({ name, email, password: pass });
+    }
+    closeModals();
+    renderWorkers();
+  } catch (e) {
+    alert(e.body?.error || 'Error al guardar');
+  } finally { btn.disabled = false; }
+}
+
+/* ── SERVICES ── */
+async function renderSvcs() {
+  services = await BC.getServices(true);
+  const icons={};
+  document.getElementById('svcList').innerHTML = `
+    <div class="section-card">
+      ${services.map(s=>`
+        <div class="svc-row">
+          <div>
+            <div class="name">✂ ${s.name} ${s.sku?`<span style="color:var(--muted2);font-size:10px">[${s.sku}]</span>`:''}</div>
+            <div class="meta">${s.duration} min · ${s.active?'<span class="text-success">Activo</span>':'<span class="text-danger">Inactivo</span>'}${s.unidades_vendidas?` · ${s.unidades_vendidas} vendidas`:''}</div>
+          </div>
+          <div class="svc-row-actions">
+            <span class="price">${BC.fmt(s.price)}</span>
+            <button class="btn btn-sm btn-ghost" onclick="editSvc(${s.id})">Editar</button>
+            <button class="btn btn-sm btn-danger" onclick="confirmDelete('svc',${s.id},'¿Eliminar ${s.name}?')">Eliminar</button>
+          </div>
+        </div>`).join('')}
+    </div>` || '<p style="color:var(--muted);font-size:13px">No hay servicios.</p>';
+}
+function openAddSvc() {
+  editingSvc=null;
+  document.getElementById('svcModalTitle').textContent='Añadir servicio';
+  ['sName','sDur','sPrice'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('svcModal').classList.add('open');
+}
+function editSvc(id) {
+  const s=services.find(x=>x.id===id);
+  editingSvc=s;
+  document.getElementById('svcModalTitle').textContent='Editar servicio';
+  document.getElementById('sName').value=s.name;
+  document.getElementById('sDur').value=s.duration;
+  document.getElementById('sPrice').value=s.price;
+  document.getElementById('svcModal').classList.add('open');
+}
+async function saveSvc() {
+  const name=document.getElementById('sName').value.trim();
+  const dur=parseInt(document.getElementById('sDur').value);
+  const price=parseInt(document.getElementById('sPrice').value);
+  if(!name||!dur||!price) return alert('Completa todos los campos');
+
+  const btn = document.getElementById('btnSaveSvc');
+  btn.disabled = true;
+  try {
+    if(editingSvc) await BC.updateService(editingSvc.id, { name, duration: dur, price });
+    else await BC.createService({ name, duration: dur, price });
+    closeModals();
+    renderSvcs();
+  } catch (e) {
+    alert(e.body?.error || 'Error al guardar');
+  } finally { btn.disabled = false; }
+}
+
+/* ── CSV IMPORT ── */
+function handleCSV(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const resultEl = document.getElementById('csvResult');
+    resultEl.innerHTML = '<div class="loading-msg">Procesando CSV...</div>';
+    try {
+      const rows = BC.parseCSV(e.target.result);
+      const res = await BC.importServicesCSV(rows);
+      resultEl.innerHTML = `
+        <div class="section-card csv-result">
+          ✅ Importación completa: <strong>${res.created}</strong> servicios creados, <strong>${res.updated}</strong> actualizados.
+          ${res.errors.length ? `<br>⚠️ ${res.errors.length} filas con errores: ${res.errors.map(e=>`fila ${e.row} (${e.error})`).join(', ')}` : ''}
+        </div>`;
+      renderSvcs();
+    } catch (err) {
+      resultEl.innerHTML = `<div class="section-card csv-result" style="color:var(--danger)">Error al importar: ${err.body?.error || err.message}</div>`;
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+/* ── DELETE ── */
+let pendingDelete=null;
+function confirmDelete(type,id,msg) {
+  pendingDelete={type,id};
+  document.getElementById('confirmMsg').textContent=msg+' Esta acción no se puede deshacer.';
+  document.getElementById('confirmBtn').onclick=doDelete;
+  document.getElementById('confirmModal').classList.add('open');
+}
+async function doDelete() {
+  try {
+    if(pendingDelete.type==='worker') { await BC.deleteWorker(pendingDelete.id); closeModals(); renderWorkers(); }
+    else if(pendingDelete.type==='svc') { await BC.deleteService(pendingDelete.id); closeModals(); renderSvcs(); }
+    else if(pendingDelete.type==='booking') { await BC.deleteBooking(pendingDelete.id); closeModals(); renderAllBookings(); }
+  } catch (e) {
+    alert(e.body?.error || 'No se pudo eliminar');
+  }
+}
+
+/* ── ALL BOOKINGS ── */
+async function renderAllBookings() {
+  bookings = await BC.getBookings();
+  const sorted=[...bookings].sort((a,b)=>a.date+a.time>b.date+b.time?-1:1);
+  document.getElementById('allBookings').innerHTML=`
+    <thead><tr><th>Cliente</th><th>Servicio</th><th>Barbero</th><th>Fecha</th><th>Hora</th><th>Estado</th><th>Total</th><th></th></tr></thead>
+    <tbody>${sorted.map(b=>`<tr>
+      <td>${b.client_name}</td>
+      <td>${b.service_name||'—'}</td>
+      <td>${b.worker_name?.split(' ')[0]||'—'}</td>
+      <td>${BC.fmtDate(b.date)}</td>
+      <td>${b.time}</td>
+      <td>${BC.statusBadge(b.status)}</td>
+      <td class="text-gold">${BC.fmt(b.amount)}</td>
+      <td><button class="btn btn-sm btn-danger" onclick="confirmDelete('booking',${b.id},'¿Eliminar esta reserva?')">Eliminar</button></td>
+    </tr>`).join('') || '<tr><td colspan="8" style="padding:16px;color:var(--muted)">No hay reservas</td></tr>'}</tbody>`;
+}
+
+function closeModals() {
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.classList.remove('open'));
+}
+
+renderDashboard();
+</script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BarberCut — Iniciar sesión</title>
+<link rel="stylesheet" href="style.css">
+<style>
+body { display: flex; flex-direction: column; min-height: 100vh; }
+.login-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 32px 16px; }
+.login-box { width: 100%; max-width: 380px; }
+.login-logo { text-align: center; margin-bottom: 32px; }
+.login-logo .logo-text { font-size: 22px; font-weight: 600; color: var(--gold); }
+.login-logo p { font-size: 13px; color: var(--muted); margin-top: 6px; }
+.login-card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 28px; }
+.error-msg { display: none; }
+.error-msg.show { display: block; }
+.back-link { text-align: center; margin-top: 18px; }
+.back-link a { font-size: 13px; color: var(--muted); }
+.back-link a:hover { color: var(--text); }
+.hint { background: var(--bg3); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 12px; margin-top: 16px; font-size: 12px; color: var(--muted2); line-height: 1.8; }
+.hint strong { color: var(--muted); }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="main.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M6 3l6 9-4 6h8M14 3l-2 3"/><circle cx="17" cy="17" r="3"/></svg>
+    BarberCut
+  </a>
+  <a href="main.html"><button class="btn btn-ghost">← Volver al inicio</button></a>
+</nav>
+
+<div class="login-wrap">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="logo-text">✂ BarberCut</div>
+      <p>Accede a tu cuenta de trabajo</p>
+    </div>
+
+    <div class="login-card">
+      <div class="form-group">
+        <label>Correo electrónico</label>
+        <input type="email" id="email" placeholder="tu@barbercut.cl" autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+      </div>
+
+      <div class="alert alert-info error-msg" id="errorMsg">Correo o contraseña incorrectos.</div>
+
+      <button class="btn btn-gold" style="width:100%;padding:12px;font-size:14px" id="btnLogin" onclick="doLogin()">
+        Iniciar sesión →
+      </button>
+
+      <div class="hint">
+        <strong>Demo:</strong><br>
+        Admin: admin@barbercut.cl / admin123<br>
+        Barbero: andres@barbercut.cl / 1234
+      </div>
+    </div>
+
+    <div class="back-link">
+      <a href="cliente/reserva.html">¿Solo quieres reservar? → Ir a reservas</a>
+    </div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+document.getElementById('password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+async function doLogin() {
+  const email = document.getElementById('email').value.trim();
+  const pass = document.getElementById('password').value;
+  const errEl = document.getElementById('errorMsg');
+  const btn = document.getElementById('btnLogin');
+  errEl.classList.remove('show');
+
+  if (!email || !pass) {
+    errEl.textContent = 'Completa ambos campos.';
+    errEl.classList.add('show');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Ingresando...';
+  try {
+    const user = await BC.login(email, pass);
+    if (user.role === 'admin') window.location.href = 'admin/dashboard.html';
+    else window.location.href = 'trabajador/dashboard_trabajador.html';
+  } catch (e) {
+    errEl.textContent = e.body?.error || 'Correo o contraseña incorrectos.';
+    errEl.classList.add('show');
+    btn.disabled = false;
+    btn.textContent = 'Iniciar sesión →';
+  }
+}
+</script>
+</body>
+</html>

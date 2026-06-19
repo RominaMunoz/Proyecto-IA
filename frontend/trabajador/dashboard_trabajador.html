@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BarberCut — Mi agenda</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+.page-head { padding: 20px 24px; border-bottom: 0.5px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.page-head h1 { font-size: 16px; font-weight: 500; }
+.greeting { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.filter-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.filter-btn { background: var(--bg3); border: 0.5px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 12px; color: var(--muted); transition: all .15s; }
+.filter-btn.active { background: var(--gold-dim); border-color: var(--border-gold); color: var(--gold); }
+.agenda-empty { text-align: center; padding: 32px; color: var(--muted); font-size: 13px; }
+.booking-row { display: grid; grid-template-columns: 80px 1fr auto; gap: 16px; align-items: center; padding: 14px 16px; background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius); margin-bottom: 8px; }
+.b-time { text-align: center; }
+.b-time .time { font-size: 15px; font-weight: 600; color: var(--gold); }
+.b-time .date { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.b-info .client { font-size: 13px; font-weight: 500; }
+.b-info .svc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.b-info .price { font-size: 11px; color: var(--muted2); margin-top: 4px; }
+.b-actions { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+.svc-toggle { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius); margin-bottom: 8px; }
+.toggle-switch { width: 40px; height: 22px; background: var(--bg3); border: 0.5px solid var(--border); border-radius: 11px; position: relative; cursor: pointer; transition: background .15s; }
+.toggle-switch.on { background: var(--gold); border-color: var(--gold); }
+.toggle-knob { width: 16px; height: 16px; background: #fff; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: transform .15s; }
+.toggle-switch.on .toggle-knob { transform: translateX(18px); }
+.loading-msg { text-align: center; padding: 30px; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="../main.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M6 3l6 9-4 6h8M14 3l-2 3"/><circle cx="17" cy="17" r="3"/></svg>
+    BarberCut
+  </a>
+  <div class="nav-links">
+    <button class="btn btn-ghost" onclick="logout()">Cerrar sesión</button>
+  </div>
+</nav>
+
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="sidebar-item active" onclick="showSection('agenda')" id="nav-agenda">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      Mi agenda
+    </div>
+    <div class="sidebar-item" onclick="showSection('servicios')" id="nav-servicios">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      Mis servicios
+    </div>
+    <div class="sidebar-item" onclick="showSection('stats')" id="nav-stats">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg>
+      Mi rendimiento
+    </div>
+  </aside>
+
+  <main class="main-content">
+
+    <div id="sec-agenda">
+      <div class="page-head" style="padding:0 0 20px;border:none">
+        <div>
+          <h1 id="welcomeTitle">Mi agenda</h1>
+          <div class="greeting" id="greetingText"></div>
+        </div>
+        <div class="filter-row" id="filterRow">
+          <button class="filter-btn active" onclick="setFilter('todas',this)">Todas</button>
+          <button class="filter-btn" onclick="setFilter('hoy',this)">Hoy</button>
+          <button class="filter-btn" onclick="setFilter('confirmada',this)">Confirmadas</button>
+          <button class="filter-btn" onclick="setFilter('completada',this)">Completadas</button>
+        </div>
+      </div>
+      <div class="stats-grid" id="workerStats"><div class="loading-msg">Cargando...</div></div>
+      <div id="bookingsList"></div>
+    </div>
+
+    <div id="sec-servicios" style="display:none">
+      <div class="page-head" style="padding:0 0 20px;border:none">
+        <div><h1>Mis servicios</h1><div class="greeting">Activa o desactiva los servicios que ofreces</div></div>
+      </div>
+      <div id="svcToggles"></div>
+    </div>
+
+    <div id="sec-stats" style="display:none">
+      <div class="page-head" style="padding:0 0 20px;border:none">
+        <div><h1>Mi rendimiento</h1><div class="greeting">Estadísticas de los últimos 7 días</div></div>
+      </div>
+      <div class="stats-grid" id="perfStats"></div>
+      <div class="card card-gold mt-20" style="margin-top:0" id="perfBreakdown"></div>
+    </div>
+
+  </main>
+</div>
+
+<script src="../data.js"></script>
+<script>
+let session = BC.requireRole('trabajador', '../login.html');
+let services = [];
+let myBookings = [];
+let currentFilter = 'todas';
+let workerServices = {};
+
+const wsKey = session ? 'bc_ws_' + session.id : null;
+try { workerServices = JSON.parse(localStorage.getItem(wsKey)) || {}; }
+catch { workerServices = {}; }
+
+function saveWS() { localStorage.setItem(wsKey, JSON.stringify(workerServices)); }
+function logout() { BC.clearSession(); window.location.href = '../login.html'; }
+
+function showSection(name) {
+  ['agenda','servicios','stats'].forEach(s => {
+    document.getElementById('sec-'+s).style.display = s===name ? 'block' : 'none';
+    document.getElementById('nav-'+s).classList.toggle('active', s===name);
+  });
+  if (name==='servicios') renderServices();
+  if (name==='stats') renderStats();
+}
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderBookings();
+}
+
+function renderHeader() {
+  const h = new Date().getHours();
+  document.getElementById('welcomeTitle').textContent = 'Hola, ' + session.name.split(' ')[0];
+  document.getElementById('greetingText').textContent =
+    (h<12?'Buenos días':h<18?'Buenas tardes':'Buenas noches') + ' — ' +
+    new Date().toLocaleDateString('es-CL',{weekday:'long',day:'numeric',month:'long'});
+}
+
+async function loadServices() {
+  if (!services.length) {
+    services = await BC.getServices(true);
+    services.forEach(s => { if (workerServices[s.id] === undefined) workerServices[s.id] = true; });
+  }
+}
+
+async function renderWorkerStats() {
+  myBookings = await BC.getBookings();
+  const confirmed = myBookings.filter(b=>b.status==='confirmada').length;
+  const completed = myBookings.filter(b=>b.status==='completada').length;
+  const income = myBookings.filter(b=>b.status==='completada').reduce((s,b)=>s+b.amount,0);
+  const rated = myBookings.filter(b=>b.rating);
+  const avgRating = rated.length ? rated.reduce((s,b)=>s+b.rating,0)/rated.length : 0;
+  document.getElementById('workerStats').innerHTML = `
+    <div class="stat-card"><div class="stat-num">${confirmed}</div><div class="stat-lbl">Citas pendientes</div></div>
+    <div class="stat-card"><div class="stat-num">${completed}</div><div class="stat-lbl">Completadas</div></div>
+    <div class="stat-card"><div class="stat-num">${BC.fmt(income)}</div><div class="stat-lbl">Ingresos totales</div></div>
+    <div class="stat-card"><div class="stat-num">${avgRating?avgRating.toFixed(1):'—'} ★</div><div class="stat-lbl">Valoración media</div></div>`;
+}
+
+function renderBookings() {
+  const todayStr = new Date().toISOString().slice(0,10);
+  let mine = [...myBookings].sort((a,b)=>a.date+a.time>b.date+b.time?1:-1);
+  if (currentFilter==='hoy') mine = mine.filter(b=>b.date===todayStr);
+  else if (currentFilter==='confirmada'||currentFilter==='completada') mine = mine.filter(b=>b.status===currentFilter);
+
+  if (!mine.length) {
+    document.getElementById('bookingsList').innerHTML = `<div class="agenda-empty">No hay citas con este filtro</div>`;
+    return;
+  }
+  document.getElementById('bookingsList').innerHTML = mine.map(b => `
+    <div class="booking-row">
+      <div class="b-time"><div class="time">${b.time}</div><div class="date">${BC.fmtDate(b.date)}</div></div>
+      <div class="b-info">
+        <div class="client">${b.client_name}</div>
+        <div class="svc">${b.service_name||'—'} · ${b.duration||0} min</div>
+        <div class="price">${BC.fmt(b.amount)}</div>
+      </div>
+      <div class="b-actions">
+        ${BC.statusBadge(b.status)}
+        ${b.status==='confirmada'?`<button class="btn btn-sm btn-ghost" onclick="completeBooking(${b.id})">Completar</button>`:''}
+        ${b.rating ? BC.stars(b.rating) : ''}
+      </div>
+    </div>`).join('');
+}
+
+async function completeBooking(id) {
+  try {
+    await BC.updateBookingStatus(id, 'completada');
+    await BC.rateBooking(id, 5);
+    await renderWorkerStats();
+    renderBookings();
+  } catch (e) {
+    alert(e.body?.error || 'No se pudo completar la cita');
+  }
+}
+
+async function renderServices() {
+  await loadServices();
+  document.getElementById('svcToggles').innerHTML = services.map(s => `
+    <div class="svc-toggle">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:36px;height:36px;background:var(--bg3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px">✂</div>
+        <div>
+          <div style="font-size:13px;font-weight:500">${s.name}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">${s.duration} min · ${BC.fmt(s.price)}</div>
+        </div>
+      </div>
+      <div class="toggle-switch ${workerServices[s.id]?'on':''}" onclick="toggleSvc(${s.id})">
+        <div class="toggle-knob"></div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleSvc(id) {
+  workerServices[id] = !workerServices[id];
+  saveWS();
+  renderServices();
+}
+
+async function renderStats() {
+  await loadServices();
+  const mine = myBookings.filter(b=>b.status==='completada');
+  const byService = {};
+  mine.forEach(b=>{ byService[b.service_id]=(byService[b.service_id]||0)+1; });
+  const topSvcId = Object.keys(byService).sort((a,b)=>byService[b]-byService[a])[0];
+  const topSvcName = services.find(s=>s.id==topSvcId)?.name || '—';
+  const income = mine.reduce((s,b)=>s+b.amount,0);
+  const rated = mine.filter(b=>b.rating);
+  const avgRating = rated.length ? rated.reduce((s,b)=>s+b.rating,0)/rated.length : 0;
+
+  document.getElementById('perfStats').innerHTML = `
+    <div class="stat-card"><div class="stat-num">${mine.length}</div><div class="stat-lbl">Citas completadas</div></div>
+    <div class="stat-card"><div class="stat-num">${BC.fmt(income)}</div><div class="stat-lbl">Ingresos generados</div></div>
+    <div class="stat-card"><div class="stat-num">${avgRating.toFixed(1)} ★</div><div class="stat-lbl">Valoración media</div></div>
+    <div class="stat-card"><div class="stat-num">${topSvcName.split(' ')[0]}</div><div class="stat-lbl">Servicio más popular</div></div>`;
+
+  document.getElementById('perfBreakdown').innerHTML = `
+    <div style="font-size:13px;font-weight:500;margin-bottom:14px">Desglose por servicio</div>
+    ${services.map(s=>{
+      const cnt=byService[s.id]||0;
+      const pct=mine.length?Math.round(cnt/mine.length*100):0;
+      return `<div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px">
+          <span>${s.name}</span><span class="text-gold">${cnt} citas</span>
+        </div>
+        <div style="height:4px;background:var(--bg3);border-radius:2px">
+          <div style="height:4px;width:${pct}%;background:var(--gold);border-radius:2px"></div>
+        </div>
+      </div>`;
+    }).join('')}`;
+}
+
+async function init() {
+  renderHeader();
+  await renderWorkerStats();
+  renderBookings();
+}
+init();
+</script>
+</body>
+</html>

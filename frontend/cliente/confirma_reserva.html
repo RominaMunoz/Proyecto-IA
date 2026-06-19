@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BarberCut — Reserva confirmada</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+body { display: flex; flex-direction: column; min-height: 100vh; }
+.page { flex: 1; display: flex; align-items: center; justify-content: center; padding: 32px 16px; }
+.box { width: 100%; max-width: 420px; }
+.check-icon { font-size: 56px; text-align: center; margin-bottom: 20px; }
+.title { font-size: 22px; font-weight: 600; text-align: center; margin-bottom: 8px; }
+.sub { font-size: 14px; color: var(--muted); text-align: center; margin-bottom: 28px; line-height: 1.7; }
+.detail-card { background: var(--bg2); border: 0.5px solid var(--border-gold); border-radius: var(--radius-lg); padding: 22px; margin-bottom: 20px; }
+.d-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 0.5px solid var(--border); font-size: 13px; }
+.d-row:last-child { border-bottom: none; }
+.d-row .lbl { color: var(--muted); }
+.d-row .val { font-weight: 500; }
+.total-row { background: var(--gold-dim); border: 0.5px solid var(--border-gold); border-radius: var(--radius); padding: 14px 18px; display: flex; justify-content: space-between; margin-bottom: 20px; }
+.total-row .t-lbl { color: var(--muted); font-size: 13px; }
+.total-row .t-val { color: var(--gold); font-size: 16px; font-weight: 600; }
+.actions { display: flex; flex-direction: column; gap: 10px; }
+.cancel-link { text-align: center; margin-top: 12px; }
+.cancel-link a { font-size: 12px; color: var(--muted2); }
+.cancel-link a:hover { color: var(--danger); }
+.id-badge { background: var(--bg3); border: 0.5px solid var(--border); border-radius: 6px; padding: 2px 8px; font-size: 11px; color: var(--muted2); font-family: monospace; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="../main.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M6 3l6 9-4 6h8M14 3l-2 3"/><circle cx="17" cy="17" r="3"/></svg>
+    BarberCut
+  </a>
+  <a href="../main.html"><button class="btn btn-ghost">← Inicio</button></a>
+</nav>
+
+<div class="page">
+  <div class="box">
+    <div class="check-icon">✅</div>
+    <h1 class="title">¡Reserva confirmada!</h1>
+    <p class="sub">Tu hora ha sido reservada exitosamente. Te esperamos en BarberCut.<br>Llega 5 minutos antes de tu cita.</p>
+
+    <div class="detail-card" id="detailCard">
+      <div class="d-row"><span class="lbl">N° de reserva</span><span class="val" id="bookingId"></span></div>
+      <div class="d-row"><span class="lbl">Barbero</span><span class="val" id="d-worker"></span></div>
+      <div class="d-row"><span class="lbl">Servicio</span><span class="val" id="d-service"></span></div>
+      <div class="d-row"><span class="lbl">Duración</span><span class="val" id="d-duration"></span></div>
+      <div class="d-row"><span class="lbl">Fecha</span><span class="val" id="d-date"></span></div>
+      <div class="d-row"><span class="lbl">Hora</span><span class="val" id="d-time"></span></div>
+    </div>
+
+    <div class="total-row">
+      <span class="t-lbl">Total a pagar</span>
+      <span class="t-val" id="d-total"></span>
+    </div>
+
+    <div class="actions">
+      <a href="reserva.html"><button class="btn btn-outline" style="width:100%;padding:12px">Nueva reserva</button></a>
+      <a href="../main.html"><button class="btn btn-gold" style="width:100%;padding:12px">Volver al inicio →</button></a>
+    </div>
+
+    <div class="cancel-link">
+      <a href="../main.html">¿Necesitas cancelar? Llámanos al +56 9 1234 5678</a>
+    </div>
+  </div>
+</div>
+
+<script src="../data.js"></script>
+<script>
+const data = BC.load();
+const last = data.bookings.filter(b => b.status === 'confirmada').slice(-1)[0];
+
+if (last) {
+  const svc = data.services.find(s => s.id === last.service);
+  const wrk = data.workers.find(w => w.id === last.worker);
+  document.getElementById('bookingId').innerHTML = `<span class="id-badge">#BC-${String(last.id).padStart(4,'0')}</span>`;
+  document.getElementById('d-worker').textContent = wrk?.name || '—';
+  document.getElementById('d-service').textContent = svc?.name || '—';
+  document.getElementById('d-duration').textContent = svc ? svc.duration + ' min' : '—';
+  document.getElementById('d-date').textContent = BC.fmtDate(last.date);
+  document.getElementById('d-time').textContent = last.time;
+  document.getElementById('d-total').textContent = BC.fmt(last.amount);
+} else {
+  document.querySelector('.box').innerHTML = `
+    <div class="check-icon">📋</div>
+    <h1 class="title">Sin reserva reciente</h1>
+    <p class="sub">No encontramos una reserva activa. Realiza una nueva reserva.</p>
+    <a href="reserva.html"><button class="btn btn-gold" style="width:100%;padding:12px">Reservar ahora →</button></a>`;
+}
+</script>
+</body>
+</html>

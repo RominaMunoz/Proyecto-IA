@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BarberCut — Barbería Profesional</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.hero { padding: 64px 24px 56px; text-align: center; border-bottom: 0.5px solid var(--border); }
+.hero-tag { font-size: 11px; color: var(--gold); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 14px; }
+.hero h1 { font-size: 32px; font-weight: 600; line-height: 1.25; margin-bottom: 14px; max-width: 520px; margin-left: auto; margin-right: auto; }
+.hero p { font-size: 15px; color: var(--muted); max-width: 440px; margin: 0 auto 32px; line-height: 1.7; }
+.hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+.about-stats { display: flex; flex-direction: column; gap: 10px; }
+.works-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.work-card { background: var(--bg3); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 28px 12px; text-align: center; }
+.work-icon { font-size: 24px; margin-bottom: 10px; color: var(--muted2); }
+.work-lbl { font-size: 12px; color: var(--muted); }
+.cta-band { padding: 48px 24px; text-align: center; background: var(--bg2); }
+.cta-band h2 { font-size: 22px; font-weight: 600; margin-bottom: 8px; }
+.cta-band p { color: var(--muted); margin-bottom: 28px; }
+.trust-row { display: flex; justify-content: center; gap: 28px; margin-top: 20px; flex-wrap: wrap; }
+.trust-item { font-size: 12px; color: var(--muted2); display: flex; align-items: center; gap: 7px; }
+.trust-icon { color: var(--gold); font-size: 16px; }
+footer { padding: 20px 24px; border-top: 0.5px solid rgba(201,168,76,.15); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; background: var(--bg2); }
+footer .logo { font-size: 14px; font-weight: 600; color: var(--gold); }
+footer nav { display: flex; gap: 18px; }
+footer nav a { font-size: 12px; color: var(--muted2); }
+footer nav a:hover { color: var(--muted); }
+footer .cr { font-size: 11px; color: var(--muted2); }
+@media(max-width:600px){ .about-grid,.works-grid{ grid-template-columns:1fr; } .hero h1{font-size:24px;} }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="main.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3l6 9-4 6h8M14 3l-2 3"/><circle cx="17" cy="17" r="3"/></svg>
+    BarberCut
+  </a>
+  <div class="nav-links">
+    <a href="login.html"><button class="btn btn-outline">Iniciar sesión</button></a>
+    <a href="cliente/reserva.html"><button class="btn btn-gold">Reservar ahora</button></a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-tag">✦ Reserva online · Sin llamadas · 24/7</div>
+  <h1>El arte del buen corte,<br>a un clic</h1>
+  <p>Elige tu barbero, selecciona el servicio y reserva en menos de 30 segundos. Sin registro obligatorio.</p>
+  <div class="hero-btns">
+    <a href="cliente/reserva.html"><button class="btn btn-gold btn-lg">Reservar mi hora →</button></a>
+    <a href="#trabajos"><button class="btn btn-outline btn-lg">Ver nuestros trabajos</button></a>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-tag">Quiénes somos</div>
+  <div class="sec-head"><h2 class="sec-title" style="font-size:18px">Más que una barbería</h2></div>
+  <div class="about-grid">
+    <p style="color:var(--muted);font-size:13px;line-height:1.8">
+      Somos un equipo de barberos profesionales con más de 10 años de experiencia en Coquimbo. Nos especializamos en cortes clásicos, fades modernos y arreglo de barba. Atendemos con cita previa para garantizar tu tiempo y el nuestro.<br><br>
+      Cada visita es una experiencia completa: ambiente premium, productos de calidad y los mejores barberos de la región.
+    </p>
+    <div class="about-stats">
+      <div class="stat-card"><div class="stat-num">2.400+</div><div class="stat-lbl">Clientes atendidos</div></div>
+      <div class="stat-card"><div class="stat-num">98%</div><div class="stat-lbl">Tasa de satisfacción</div></div>
+      <div class="stat-card"><div class="stat-num">10 años</div><div class="stat-lbl">De experiencia</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="trabajos">
+  <div class="sec-tag">Trabajos anteriores</div>
+  <div class="sec-head"><h2 class="sec-title" style="font-size:18px">El resultado habla por sí solo</h2></div>
+  <div class="works-grid">
+    <div class="work-card"><div class="work-icon">✂</div><div class="work-lbl">Fade clásico</div></div>
+    <div class="work-card"><div class="work-icon">🪒</div><div class="work-lbl">Corte + barba</div></div>
+    <div class="work-card"><div class="work-icon">⭐</div><div class="work-lbl">Degradado</div></div>
+    <div class="work-card"><div class="work-icon">✂</div><div class="work-lbl">Texturizado</div></div>
+    <div class="work-card"><div class="work-icon">🪒</div><div class="work-lbl">Barba perfilada</div></div>
+    <div class="work-card"><div class="work-icon">⭐</div><div class="work-lbl">Estilo moderno</div></div>
+  </div>
+  <p class="text-sm text-muted mt-12" style="text-align:center">Síguenos en Instagram <span class="text-gold">@barbercut</span></p>
+</section>
+
+<section class="sec">
+  <div class="sec-tag">Actividad reciente</div>
+  <div class="sec-head"><h2 class="sec-title" style="font-size:18px">Clientes que confiaron en nosotros</h2></div>
+  <div class="tbl-wrap"><table id="clientTable"><tbody><tr><td style="padding:16px;color:var(--muted)">Cargando...</td></tr></tbody></table></div>
+  <p class="text-sm mt-12" style="color:var(--muted2)">Mostrando los últimos 6 atendidos · Actualizado en tiempo real</p>
+</section>
+
+<div class="cta-band">
+  <h2>¿Listo para tu próximo corte?</h2>
+  <p>Reserva en segundos. Sin registro obligatorio.</p>
+  <a href="cliente/reserva.html"><button class="btn btn-gold btn-lg">Reservar mi hora →</button></a>
+  <div class="trust-row">
+    <span class="trust-item"><span class="trust-icon">🔒</span> Pago seguro</span>
+    <span class="trust-item"><span class="trust-icon">✓</span> Sin cargos ocultos</span>
+    <span class="trust-item"><span class="trust-icon">✗</span> Cancela gratis</span>
+  </div>
+</div>
+
+<footer>
+  <span class="logo">✂ BarberCut</span>
+  <nav>
+    <a href="main.html">Inicio</a>
+    <a href="cliente/reserva.html">Reservar</a>
+    <a href="login.html">Ingresar</a>
+  </nav>
+  <span class="cr">© 2026 BarberCut · Coquimbo</span>
+</footer>
+
+<script src="data.js"></script>
+<script>
+async function loadRecent() {
+  const tbl = document.getElementById('clientTable');
+  try {
+    const recent = await BC.getRecentPublic(6);
+    tbl.innerHTML = `
+      <thead><tr><th>Cliente</th><th>Servicio</th><th>Barbero</th><th>Fecha</th><th>Valoración</th></tr></thead>
+      <tbody>
+        ${recent.map(b => `<tr>
+          <td>${b.client_name}</td>
+          <td>${b.service_name || '—'}</td>
+          <td>${b.worker_name?.split(' ')[0] || '—'}</td>
+          <td>${BC.fmtDate(b.date)}</td>
+          <td>${BC.stars(b.rating)}</td>
+        </tr>`).join('') || '<tr><td colspan="5" style="padding:16px;color:var(--muted)">Aún no hay reservas completadas</td></tr>'}
+      </tbody>`;
+  } catch (e) {
+    tbl.innerHTML = `<tbody><tr><td style="padding:16px;color:var(--muted)">No se pudo cargar la actividad reciente.</td></tr></tbody>`;
+  }
+}
+loadRecent();
+</script>
+</body>
+</html>
