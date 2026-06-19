@@ -1,6 +1,6 @@
 // === BarberCut — capa de conexión a la API ===
 // Cambia esta URL por la de tu backend desplegado en Render.
-const API_URL = 'https://TU-BACKEND.onrender.com/api';
+const API_URL = 'https://barbercut-api.onrender.com/api';
 
 const SESSION_KEY = 'bc_session';
 const TOKEN_KEY = 'bc_token';
