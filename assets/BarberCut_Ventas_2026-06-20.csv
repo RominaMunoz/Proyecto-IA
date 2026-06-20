@@ -1,0 +1,29 @@
+sku,nombre_servicio,costo_unitario,precio_venta,barbero,unidades_vendidas
+BC001,Corte de Cabello Premium + Lavado,5,25,Carlos,303
+BC001,Corte de Cabello Premium + Lavado,5,25,Alexander,117
+BC002,"Combo BarberCut: Corte, Barba y Facial",10,45,Carlos,133
+BC002,"Combo BarberCut: Corte, Barba y Facial",10,45,Alexander,147
+BC003,Perfilado de Barba con Navaja y Toalla,3,18,Carlos,182
+BC003,Perfilado de Barba con Navaja y Toalla,3,18,Alexander,128
+BC004,Corte de Cabello Clásico Tradicional,4,20,Carlos,103
+BC004,Corte de Cabello Clásico Tradicional,4,20,Alexander,287
+BC005,Terapia Capilar Anticaída & Masaje,15,60,Carlos,23
+BC005,Terapia Capilar Anticaída & Masaje,15,60,Alexander,72
+BC006,Coloración de Cabello / Camuflaje de Canas,8,35,Carlos,51
+BC006,Coloración de Cabello / Camuflaje de Canas,8,35,Alexander,59
+BC007,Cera Moldeadora BarberCut Efecto Mate,4,15,Carlos,1
+BC007,Cera Moldeadora BarberCut Efecto Mate,4,15,Alexander,159
+BC008,Aceite Orgánico de Cuidado Esencial,6,22,Carlos,49
+BC008,Aceite Orgánico de Cuidado Esencial,6,22,Alexander,41
+BC009,Tratamiento Facial Purificante y Exfoliante,5,28,Carlos,68
+BC009,Tratamiento Facial Purificante y Exfoliante,5,28,Alexander,37
+BC010,Corte Infantil Estilo Libre (Menores),3,15,Carlos,67
+BC010,Corte Infantil Estilo Libre (Menores),3,15,Alexander,53
+BC011,Delineado de Cejas Detallado,1.5,10,Carlos,57
+BC011,Delineado de Cejas Detallado,1.5,10,Alexander,83
+BC012,Shampoo Revitalizante de Mentol,5,18,Carlos,35
+BC012,Shampoo Revitalizante de Mentol,5,18,Alexander,25
+BC013,Afeitado de Cabeza Completo con Toalla Caliente,4,22,Carlos,22
+BC013,Afeitado de Cabeza Completo con Toalla Caliente,4,22,Alexander,23
+BC014,Mascarilla Negra de Carbón Activo Purificante,2,12,Carlos,31
+BC014,Mascarilla Negra de Carbón Activo Purificante,2,12,Alexander,39
