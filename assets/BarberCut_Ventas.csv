@@ -1,0 +1,43 @@
+sku,nombre_servicio,costo_unitario,precio_venta,barbero,unidades_vendidas
+BC001,Corte de Cabello Premium + Lavado,5,25,Andrés Mora,214
+BC001,Corte de Cabello Premium + Lavado,5,25,Miguel Reyes,92
+BC001,Corte de Cabello Premium + Lavado,5,25,Carlos Vega,114
+BC002,"Combo BarberCut: Corte, Barba y Facial",10,45,Andrés Mora,90
+BC002,"Combo BarberCut: Corte, Barba y Facial",10,45,Miguel Reyes,131
+BC002,"Combo BarberCut: Corte, Barba y Facial",10,45,Carlos Vega,59
+BC003,Perfilado de Barba con Navaja y Toalla,3,18,Andrés Mora,164
+BC003,Perfilado de Barba con Navaja y Toalla,3,18,Miguel Reyes,100
+BC003,Perfilado de Barba con Navaja y Toalla,3,18,Carlos Vega,46
+BC004,Corte de Cabello Clásico Tradicional,4,20,Andrés Mora,146
+BC004,Corte de Cabello Clásico Tradicional,4,20,Miguel Reyes,151
+BC004,Corte de Cabello Clásico Tradicional,4,20,Carlos Vega,93
+BC005,Terapia Capilar Anticaída & Masaje,15,60,Andrés Mora,35
+BC005,Terapia Capilar Anticaída & Masaje,15,60,Miguel Reyes,32
+BC005,Terapia Capilar Anticaída & Masaje,15,60,Carlos Vega,28
+BC006,Coloración de Cabello / Camuflaje de Canas,8,35,Andrés Mora,73
+BC006,Coloración de Cabello / Camuflaje de Canas,8,35,Miguel Reyes,10
+BC006,Coloración de Cabello / Camuflaje de Canas,8,35,Carlos Vega,27
+BC007,Cera Moldeadora BarberCut Efecto Mate,4,15,Andrés Mora,44
+BC007,Cera Moldeadora BarberCut Efecto Mate,4,15,Miguel Reyes,50
+BC007,Cera Moldeadora BarberCut Efecto Mate,4,15,Carlos Vega,66
+BC008,Aceite Orgánico de Cuidado Esencial,6,22,Andrés Mora,27
+BC008,Aceite Orgánico de Cuidado Esencial,6,22,Miguel Reyes,26
+BC008,Aceite Orgánico de Cuidado Esencial,6,22,Carlos Vega,37
+BC009,Tratamiento Facial Purificante y Exfoliante,5,28,Andrés Mora,25
+BC009,Tratamiento Facial Purificante y Exfoliante,5,28,Miguel Reyes,30
+BC009,Tratamiento Facial Purificante y Exfoliante,5,28,Carlos Vega,50
+BC010,Corte Infantil Estilo Libre (Menores),3,15,Andrés Mora,52
+BC010,Corte Infantil Estilo Libre (Menores),3,15,Miguel Reyes,58
+BC010,Corte Infantil Estilo Libre (Menores),3,15,Carlos Vega,10
+BC011,Delineado de Cejas Detallado,1.5,10,Andrés Mora,20
+BC011,Delineado de Cejas Detallado,1.5,10,Miguel Reyes,56
+BC011,Delineado de Cejas Detallado,1.5,10,Carlos Vega,64
+BC012,Shampoo Revitalizante de Mentol,5,18,Andrés Mora,4
+BC012,Shampoo Revitalizante de Mentol,5,18,Miguel Reyes,50
+BC012,Shampoo Revitalizante de Mentol,5,18,Carlos Vega,6
+BC013,Afeitado de Cabeza Completo con Toalla Caliente,4,22,Andrés Mora,17
+BC013,Afeitado de Cabeza Completo con Toalla Caliente,4,22,Miguel Reyes,17
+BC013,Afeitado de Cabeza Completo con Toalla Caliente,4,22,Carlos Vega,11
+BC014,Mascarilla Negra de Carbón Activo Purificante,2,12,Andrés Mora,26
+BC014,Mascarilla Negra de Carbón Activo Purificante,2,12,Miguel Reyes,36
+BC014,Mascarilla Negra de Carbón Activo Purificante,2,12,Carlos Vega,8
